@@ -1,6 +1,7 @@
 import smtplib
 from email.message import EmailMessage
 import os
+import yfinance as yf
 
 # --- Configuration ---
 GMAIL_USER = os.getenv('GMAIL_ADDRESS')
@@ -9,7 +10,6 @@ PHONE_GATEWAY = os.getenv('PHONE_GATEWAY')
 
 def send_text(message):
     try:
-        print("DEBUG: Connecting to Gmail...")
         msg = EmailMessage()
         msg.set_content(message)
         msg['Subject'] = "SOL RSI Alert"
@@ -20,25 +20,30 @@ def send_text(message):
             smtp.login(GMAIL_USER, GMAIL_PASS)
             smtp.send_message(msg)
             print("Alert sent successfully!")
-            
     except Exception as e:
         print(f"CRITICAL ERROR: Failed to send email: {e}")
 
 # --- RSI Logic ---
-# !!! YOU MUST ADD YOUR RSI CALCULATION CODE HERE !!!
-# Example placeholder:
-# rsi_value = get_rsi_calculation() 
+def get_rsi():
+    # Fetch SOL-USD data
+    ticker = yf.Ticker("SOL-USD")
+    hist = ticker.history(period="1mo")
+    
+    # Calculate RSI
+    delta = hist['Close'].diff()
+    gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+    rs = gain / loss
+    rsi = 100 - (100 / (1 + rs))
+    
+    return rsi.iloc[-1]
 
-# For now, if you don't have the calculation, you need to define rsi_value
-# otherwise the script will always fail.
-# Example: 
-# rsi_value = 25.0 
+# Execute the check
+rsi_value = get_rsi()
+print(f"Current RSI: {rsi_value:.2f}")
 
-if 'rsi_value' in locals():
-    if rsi_value > 70 or rsi_value < 30:
-        print(f"RSI is {rsi_value:.2f}, sending alert...")
-        send_text(f"SOL RSI Alert: The RSI is currently {rsi_value:.2f}")
-    else:
-        print(f"RSI is {rsi_value:.2f}, no alert sent.")
+if rsi_value > 70 or rsi_value < 30:
+    print(f"RSI is {rsi_value:.2f}, sending alert...")
+    send_text(f"SOL RSI Alert: The RSI is currently {rsi_value:.2f}")
 else:
-    print("ERROR: rsi_value was not calculated. Please add your RSI formula.")
+    print(f"RSI is {rsi_value:.2f}, no alert sent.")
