@@ -25,9 +25,10 @@ def send_text(message):
 
 # --- RSI Logic ---
 def get_rsi():
-    # Fetch SOL-USD data
+    # Fetch 5-minute data for the last 5 days
+    # Note: 'period' must be <= 60d for intervals < 1d
     ticker = yf.Ticker("SOL-USD")
-    hist = ticker.history(period="1mo")
+    hist = ticker.history(period="5d", interval="5m")
     
     # Calculate RSI
     delta = hist['Close'].diff()
