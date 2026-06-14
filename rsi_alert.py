@@ -9,6 +9,7 @@ PHONE_GATEWAY = os.getenv('PHONE_GATEWAY')
 
 def send_text(message):
     try:
+        print("DEBUG: Connecting to Gmail...")
         msg = EmailMessage()
         msg.set_content(message)
         msg['Subject'] = "SOL RSI Alert"
@@ -24,10 +25,20 @@ def send_text(message):
         print(f"CRITICAL ERROR: Failed to send email: {e}")
 
 # --- RSI Logic ---
-# (Make sure 'rsi_value' is defined correctly in your code above this block)
+# !!! YOU MUST ADD YOUR RSI CALCULATION CODE HERE !!!
+# Example placeholder:
+# rsi_value = get_rsi_calculation() 
 
-if rsi_value > 70 or rsi_value < 30:
-    print(f"RSI is {rsi_value:.2f}, sending alert...")
-    send_text(f"SOL RSI Alert: The RSI is currently {rsi_value:.2f}")
+# For now, if you don't have the calculation, you need to define rsi_value
+# otherwise the script will always fail.
+# Example: 
+# rsi_value = 25.0 
+
+if 'rsi_value' in locals():
+    if rsi_value > 70 or rsi_value < 30:
+        print(f"RSI is {rsi_value:.2f}, sending alert...")
+        send_text(f"SOL RSI Alert: The RSI is currently {rsi_value:.2f}")
+    else:
+        print(f"RSI is {rsi_value:.2f}, no alert sent.")
 else:
-    print(f"RSI is {rsi_value:.2f}, no alert sent.")
+    print("ERROR: rsi_value was not calculated. Please add your RSI formula.")
