@@ -18,7 +18,7 @@ def send_text(message):
         
         print("DEBUG: Connecting to Gmail...")
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.set_debuglevel(1)  # This shows the full handshake in the logs
+            smtp.set_debuglevel(1)
             smtp.login(GMAIL_USER, GMAIL_PASS)
             smtp.send_message(msg)
             print("Text alert sent successfully!")
@@ -26,10 +26,12 @@ def send_text(message):
     except Exception as e:
         print(f"CRITICAL ERROR: Failed to send email: {e}")
 
-# --- RSI Logic ---
-# (Assuming rsi_value is already calculated above this block)
+# --- Test Logic ---
+# We define a dummy value so the script doesn't crash
+rsi_value = 25.0 
 
 if True:
-    send_text(f"TEST ALERT: This is a test. The RSI is currently {rsi_value:.2f}")
+    print(f"DEBUG: RSI is {rsi_value}, triggering test email...")
+    send_text(f"TEST ALERT: If you see this, the email system is working. RSI is {rsi_value:.2f}")
 else:
     print("RSI is within normal range, no alert sent.")
