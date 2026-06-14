@@ -1,23 +1,28 @@
 name: RSI Check
+
 on:
-  schedule:
-    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+
       - name: Install dependencies
-        run: pip install requests pandas
+        run: |
+          pip install requests pandas
+
       - name: Run script
         env:
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           PHONE_GATEWAY: ${{ secrets.PHONE_GATEWAY }}
-        run: python rsi_alert.py
+        run: |
+          python rsi_alert.py
