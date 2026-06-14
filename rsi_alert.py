@@ -51,7 +51,8 @@ if current_rsi is not None:
     rsi_value = float(current_rsi.iloc[0]) if hasattr(current_rsi, 'iloc') else float(current_rsi)
     print(f"Current RSI is: {rsi_value:.2f}")
     
-    True
-        send_text(f"Alert: SOL RSI is currently {rsi_value:.2f}")
-    else:
+   if True:
+                
+      send_text(f"Alert: SOL RSI is currently {rsi_value:.2f}")
+   else:
         print("RSI is within normal range, no alert sent.")
