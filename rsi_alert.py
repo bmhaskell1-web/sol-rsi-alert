@@ -26,17 +26,22 @@ def get_rsi(symbol, period=14):
 
 def send_text(message):
     try:
+        print("DEBUG: Starting email process...")
         msg = EmailMessage()
         msg.set_content(message)
         msg['Subject'] = "SOL RSI Alert"
         msg['From'] = GMAIL_USER
         msg['To'] = PHONE_GATEWAY
+        
+        print("DEBUG: Connecting to Gmail...")
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.set_debuglevel(1)  # This forces the logs to show everything
             smtp.login(GMAIL_USER, GMAIL_PASS)
             smtp.send_message(msg)
-        print("Text alert sent successfully!")
+            print("Text alert sent successfully!")
+            
     except Exception as e:
-        print(f"Failed to send email: {e}")
+        print(f"CRITICAL ERROR: Failed to send email: {e}")
 
 # --- EXECUTION ---
 current_rsi = get_rsi("SOL-USD")
