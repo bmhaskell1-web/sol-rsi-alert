@@ -3,7 +3,7 @@ name: RSI Check
 on:
   workflow_dispatch:
   schedule:
-    - cron: '
+    - cron: '*/5 * * * *'
 
 jobs:
   build:
