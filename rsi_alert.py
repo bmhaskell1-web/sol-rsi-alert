@@ -3,8 +3,9 @@ from email.message import EmailMessage
 import os
 
 # --- Configuration ---
-GMAIL_USER = os.getenv('GMAIL_USER')
-GMAIL_PASS = os.getenv('GMAIL_PASS')
+# These names now match your GitHub Secrets exactly
+GMAIL_USER = os.getenv('GMAIL_ADDRESS')
+GMAIL_PASS = os.getenv('GMAIL_APP_PASSWORD')
 PHONE_GATEWAY = os.getenv('PHONE_GATEWAY')
 
 def send_text(message):
@@ -27,7 +28,6 @@ def send_text(message):
         print(f"CRITICAL ERROR: Failed to send email: {e}")
 
 # --- Test Logic ---
-# We define a dummy value so the script doesn't crash
 rsi_value = 25.0 
 
 if True:
