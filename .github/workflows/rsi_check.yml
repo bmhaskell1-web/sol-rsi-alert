@@ -3,24 +3,21 @@ name: RSI Check
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
+        uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-
       - name: Install dependencies
         run: |
           pip install yfinance pandas requests
-
       - name: Run script
         env:
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
