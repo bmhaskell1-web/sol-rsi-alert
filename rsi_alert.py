@@ -3,18 +3,26 @@ import smtplib
 import requests
 import pandas as pd
 from email.message import EmailMessage
+import time
 
+# --- CONFIGURATION ---
 GMAIL_USER = os.environ.get('GMAIL_ADDRESS')
 GMAIL_PASS = os.environ.get('GMAIL_APP_PASSWORD')
 PHONE_GATEWAY = os.environ.get('PHONE_GATEWAY')
 
 def get_rsi():
-    url = "https://api.binance.com/api/v3/klines?symbol=SOLUSDT&interval=5m&limit=30"
-    data = requests.get(url).json()
+    # Use a slightly longer limit to ensure we have enough data points
+    url = "https://api.binance.com/api/v3/klines?symbol=SOLUSDT&interval=5m&limit=50"
+    response = requests.get(url)
+    if response.status_code != 200:
+        return None
+    data = response.json()
     if not data or len(data) < 20:
         return None
+        
     df = pd.DataFrame(data, columns=['time', 'open', 'high', 'low', 'close', 'vol', 'ignore1', 'ignore2', 'ignore3', 'ignore4', 'ignore5', 'ignore6'])
     df['close'] = df['close'].astype(float)
+    
     delta = df['close'].diff()
     gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
     loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
@@ -28,11 +36,13 @@ def send_text(message):
     msg['Subject'] = "SOL RSI Alert"
     msg['From'] = GMAIL_USER
     msg['To'] = PHONE_GATEWAY
+    
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.login(GMAIL_USER, GMAIL_PASS)
         smtp.send_message(msg)
 
 current_rsi = get_rsi()
-if current_rsi:
+if current_rsi is not None:
+    print(f"Current RSI is: {current_rsi}")
     if current_rsi > 70 or current_rsi < 30:
         send_text(f"Alert: SOL RSI is currently {current_rsi:.2f}")
