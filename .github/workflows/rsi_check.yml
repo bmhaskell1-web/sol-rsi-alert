@@ -1,4 +1,4 @@
-name: RSI Check
+name: Brian's Market Score
 
 on:
   workflow_dispatch:
